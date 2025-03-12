@@ -12,26 +12,7 @@ async fn main() -> anyhow::Result<()> {
     tracing::info!("Listening on {}", addr);
     let listener = tokio::net::TcpListener::bind(&addr).await?;
 
-    let cors = tower_http::cors::CorsLayer::new()
-        // Allow all origins
-        .allow_origin(tower_http::cors::Any)
-        // Allow common methods
-        .allow_methods([
-            axum::http::Method::GET,
-            axum::http::Method::POST,
-            axum::http::Method::PUT,
-            axum::http::Method::DELETE,
-            axum::http::Method::OPTIONS,
-            axum::http::Method::PATCH,
-        ])
-        // Allow common headers
-        .allow_headers([
-            axum::http::header::AUTHORIZATION,
-            axum::http::header::ACCEPT,
-            axum::http::header::CONTENT_TYPE,
-        ])
-        // Allow credentials (cookies, etc.)
-        .allow_credentials(true);
+    let cors = tower_http::cors::CorsLayer::permissive();
 
     axum::serve(listener, app_state.router().layer(cors)).await?;
 
